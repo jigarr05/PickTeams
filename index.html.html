@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xSPLIT | Football Team Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0b1220;
+  --panel: #121a2b;
+  --panel2: #0d1628;
+  --line: #25324d;
+  --text: #e6edf7;
+  --muted: #94a3b8;
+  --green: #22c55e;
+  --blue: #60a5fa;
+  --red: #f87171;
+  --yellow: #facc15;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: radial-gradient(ellipse at top, #14223b 0, var(--bg) 52%);
+  color: var(--text); font-family: Inter, system-ui, sans-serif; min-height: 100vh;
+}
+header {
+  display: flex; justify-content: space-between; align-items: center; gap: 14px;
+  padding: 18px clamp(16px, 4vw, 36px); border-bottom: 1px solid var(--line);
+  background: rgba(11,18,32,.86); position: sticky; top: 0; z-index: 5; backdrop-filter: blur(12px);
+}
+.brand { display:flex; align-items:center; gap:11px; }
+.logo { width:40px; height:40px; display:grid; place-items:center; border-radius:12px; background:#22c55e20; font-size:23px; }
+h1 { margin:0; font-size:20px; letter-spacing:.04em; }
+.subtitle { color:var(--muted); font-size:12px; margin-top:3px; }
+.header-count { font-size:13px; color:#bbf7d0; background:#22c55e16; border:1px solid #22c55e45; padding:9px 12px; border-radius:999px; white-space:nowrap; }
+main { max-width:1440px; margin:0 auto; padding:22px clamp(12px, 3vw, 28px) 40px; }
+.layout { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr); gap:16px; align-items:start; }
+.stack { display:grid; gap:16px; }
+.card { background:rgba(18,26,43,.94); border:1px solid var(--line); border-radius:18px; padding:18px; min-width:0; box-shadow:0 10px 28px #00000012; }
+.card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+h2 { margin:0; font-size:16px; }
+h3 { margin:0; font-size:14px; }
+.section-note { color:var(--muted); font-size:12px; margin-top:5px; line-height:1.5; }
+.pill { color:var(--muted); background:#0b1426; border:1px solid var(--line); border-radius:999px; padding:5px 9px; font-size:11px; white-space:nowrap; }
+.roster-list, .playing-list { display:grid; gap:8px; }
+.player-row { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:9px; align-items:center; padding:10px; background:var(--panel2); border:1px solid #1b2942; border-radius:12px; }
+.player-info { min-width:0; }
+.player-name { font-size:13px; font-weight:650; overflow-wrap:anywhere; }
+.player-meta { color:var(--muted); font-size:11px; margin-top:4px; }
+.skill { display:inline-flex; align-items:center; justify-content:center; min-width:26px; padding:4px 7px; border-radius:7px; font-size:11px; font-weight:800; }
+.skill-a { color:#bbf7d0; background:#22c55e1c; }
+.skill-b { color:#fde68a; background:#eab3081c; }
+.position-select { min-width:76px; max-width:100px; padding:8px 6px; }
+select, input { width:100%; min-width:0; border:1px solid var(--line); border-radius:9px; background:#0a1324; color:var(--text); padding:10px; font:inherit; font-size:12px; outline:none; }
+select:focus, input:focus { border-color:var(--green); }
+button { border:1px solid transparent; border-radius:10px; padding:9px 12px; font:inherit; font-size:12px; font-weight:750; cursor:pointer; transition:transform .12s ease, opacity .12s ease; }
+button:hover { transform:translateY(-1px); }
+button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+.btn-primary { color:#052e16; background:linear-gradient(135deg,#4ade80,#16a34a); }
+.btn-secondary { color:#dbeafe; background:#16243b; border-color:#30415f; }
+.btn-danger { color:#fecaca; background:#ef44441b; border-color:#ef44443a; }
+.btn-quiet { color:var(--muted); background:transparent; border-color:var(--line); }
+.btn-small { padding:8px 9px; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.field label { display:block; font-size:11px; color:var(--muted); margin-bottom:6px; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+.add-form { display:grid; grid-template-columns:minmax(0,1fr) 100px 110px auto; gap:8px; }
+.empty { color:var(--muted); font-size:12px; text-align:center; padding:24px 12px; border:1px dashed #30415f; border-radius:12px; }
+.team-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+.team { background:#0a1324; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.team-top { padding:13px; display:flex; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px solid var(--line); }
+.team-top h3 { font-size:13px; }
+.team-score { color:#bbf7d0; font-size:11px; white-space:nowrap; }
+.team-body { padding:12px; }
+.team-body ul { padding-left:18px; margin:0; }
+.team-body li { font-size:12px; margin:0 0 9px; }
+.team-body li:last-child { margin-bottom:0; }
+.player-position { color:var(--muted); font-size:10px; margin-left:4px; }
+.team-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+.stat { background:#0b1426; border:1px solid var(--line); border-radius:10px; padding:10px; }
+.stat-label { color:var(--muted); font-size:10px; }
+.stat-value { font-size:16px; font-weight:800; margin-top:5px; }
+.notice { color:var(--muted); font-size:11px; line-height:1.6; margin-top:12px; }
+.toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#e2e8f0; color:#0f172a; padding:11px 16px; border-radius:10px; font-size:12px; font-weight:700; box-shadow:0 8px 28px #0005; z-index:10; display:none; max-width:calc(100% - 24px); }
+@media (max-width:900px) { .layout { grid-template-columns:1fr; } }
+@media (max-width:540px) {
+  header { padding:13px 14px; }
+  h1 { font-size:17px; }
+  .subtitle { max-width:180px; }
+  .card { padding:14px; }
+  .player-row { grid-template-columns:minmax(0,1fr) auto; }
+  .player-row .position-select { grid-column:1; grid-row:2; max-width:none; width:100%; }
+  .player-row .row-action { grid-column:2; grid-row:1 / span 2; }
+  .add-form { grid-template-columns:1fr 1fr; }
+  .add-form input { grid-column:1 / -1; }
+  .team-grid { grid-template-columns:1fr; }
+  .header-count { font-size:11px; padding:8px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">⚽</div>
+    <div><h1>PickTeams</h1><div class="subtitle">Fair teams. Better games.</div></div>
+  </div>
+  <div class="header-count" id="headerCount">Playing: 0</div>
+</header>
+
+<main>
+  <div class="layout">
+    <div class="stack">
+      <section class="card">
+        <div class="card-head">
+          <div><h2>Roster</h2><div class="section-note">Choose the position each player will play today, then add them to the match.</div></div>
+          <span class="pill" id="rosterCount">22 players</span>
+        </div>
+        <div class="roster-list" id="rosterList"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div><h2>Add a player</h2><div class="section-note">For someone who isn't in the default roster.</div></div>
+        </div>
+        <form class="add-form" id="addPlayerForm">
+          <input id="newName" type="text" placeholder="Player name" maxlength="50" required>
+          <select id="newPosition" aria-label="Default playing position">
+            <option value="Att">ATT</option><option value="Def">DEF</option><option value="Gk">GK</option>
+          </select>
+          <select id="newSkill" aria-label="Skill level">
+            <option value="A">Pro (A)</option><option value="B">Average (B)</option>
+          </select>
+          <button class="btn-primary" type="submit">Add to roster</button>
+        </form>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="card">
+        <div class="card-head">
+          <div><h2>Playing list</h2><div class="section-note">Only selected players are included in team generation.</div></div>
+          <span class="pill" id="playingCount">0 players</span>
+        </div>
+        <div class="playing-list" id="playingList"></div>
+        <div class="actions">
+          <button class="btn-primary" id="createTeamsBtn" type="button">⚖ Create balanced teams</button>
+          <button class="btn-secondary" id="sharePlayingBtn" type="button">Share names on WhatsApp</button>
+          <button class="btn-quiet" id="clearPlayingBtn" type="button">Clear list</button>
+        </div>
+        <div class="notice">Balancing priorities: team size, A/B skill points, then GK/DEF/ATT counts. With odd numbers or limited players in a position, a one-player difference may be unavoidable.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div><h2>Generated teams</h2><div class="section-note">Players are shown by name and selected playing position.</div></div>
+          <span class="pill" id="teamStatus">Not generated</span>
+        </div>
+        <div id="teamResults"><div class="empty">Add players to the playing list, then create teams.</div></div>
+        <div class="actions">
+          <button class="btn-secondary" id="shareTeamsBtn" type="button">Share both teams on WhatsApp</button>
+          <button class="btn-quiet" id="regenerateBtn" type="button">Shuffle &amp; rebalance</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const roster = [
+  {name:"Adil", position:"Gk", skillLevel:"A"},
+  {name:"JD", position:"Gk", skillLevel:"A"},
+  {name:"Kapil", position:"Gk", skillLevel:"B"},
+  {name:"Jigar", position:"Att", skillLevel:"A"},
+  {name:"Parth", position:"Def", skillLevel:"A"},
+  {name:"Bony", position:"Att", skillLevel:"A"},
+  {name:"Yash", position:"Def", skillLevel:"B"},
+  {name:"Jenil", position:"Def", skillLevel:"A"},
+  {name:"Bhavesh", position:"Def", skillLevel:"A"},
+  {name:"Ankur", position:"Att", skillLevel:"A"},
+  {name:"Shiv", position:"Att", skillLevel:"A"},
+  {name:"Jeet", position:"Def", skillLevel:"A"},
+  {name:"Gaurang", position:"Att", skillLevel:"A"},
+  {name:"Satvik", position:"Att", skillLevel:"A"},
+  {name:"Pratik", position:"Att", skillLevel:"A"},
+  {name:"Umang", position:"Att", skillLevel:"A"},
+  {name:"Kamal", position:"Def", skillLevel:"A"},
+  {name:"Raj", position:"Def", skillLevel:"A"},
+  {name:"Satvik", position:"Att", skillLevel:"A"},
+  {name:"Chintan", position:"Def", skillLevel:"A"},
+  {name:"Ayush", position:"Att", skillLevel:"A"},
+  {name:"Kevin", position:"Def", skillLevel:"A"}
+].map((p, i) => ({...p, id:`default-${i}`}));
+
+let playing = [];
+let teams = null;
+let nextId = 1;
+const positionLabels = {Gk:"GK", Def:"DEF", Att:"ATT"};
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.style.display = "none", 2600);
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+
+function getRosterPlayer(id) {
+  return roster.find(p => p.id === id);
+}
+
+function isPlaying(id) {
+  return playing.some(p => p.id === id);
+}
+
+function renderRoster() {
+  const root = document.getElementById("rosterList");
+  root.innerHTML = "";
+  [...roster].sort((a,b) => a.name.localeCompare(b.name)).forEach(player => {
+    const selected = isPlaying(player.id);
+    const row = document.createElement("div");
+    row.className = "player-row";
+    row.innerHTML = `
+      <div class="player-info">
+        <div class="player-name">${escapeHtml(player.name)}</div>
+        <div class="player-meta">Default: ${positionLabels[player.position]} · Skill: ${player.skillLevel === "A" ? "Pro" : "Average"}</div>
+      </div>
+      <select class="position-select" aria-label="Position for ${escapeHtml(player.name)}" ${selected ? "disabled" : ""}>
+        <option value="Att" ${player.position==="Att"?"selected":""}>ATT</option>
+        <option value="Def" ${player.position==="Def"?"selected":""}>DEF</option>
+        <option value="Gk" ${player.position==="Gk"?"selected":""}>GK</option>
+      </select>
+      <button class="${selected ? "btn-danger" : "btn-primary"} btn-small row-action" type="button">${selected ? "Added ✓" : "Add"}</button>`;
+    const select = row.querySelector("select");
+    select.addEventListener("change", () => {
+      player.position = select.value;
+      renderRoster();
+    });
+    row.querySelector("button").addEventListener("click", () => {
+      if (selected) {
+        playing = playing.filter(p => p.id !== player.id);
+        teams = null;
+        renderAll();
+      } else {
+        playing.push({...player});
+        teams = null;
+        renderAll();
+      }
+    });
+    root.appendChild(row);
+  });
+  document.getElementById("rosterCount").textContent = `${roster.length} players`;
+}
+
+function renderPlaying() {
+  const root = document.getElementById("playingList");
+  root.innerHTML = "";
+  if (!playing.length) {
+    root.innerHTML = '<div class="empty">No players selected yet. Add players from the roster.</div>';
+  } else {
+    playing.forEach(player => {
+      const row = document.createElement("div");
+      row.className = "player-row";
+      row.innerHTML = `
+        <div class="player-info">
+          <div class="player-name">${escapeHtml(player.name)}</div>
+          <div class="player-meta"><span class="skill ${player.skillLevel==="A"?"skill-a":"skill-b"}">${player.skillLevel}</span> ${player.skillLevel==="A"?"Pro":"Average"}</div>
+        </div>
+        <select class="position-select" aria-label="Playing position for ${escapeHtml(player.name)}">
+          <option value="Att" ${player.position==="Att"?"selected":""}>ATT</option>
+          <option value="Def" ${player.position==="Def"?"selected":""}>DEF</option>
+          <option value="Gk" ${player.position==="Gk"?"selected":""}>GK</option>
+        </select>
+        <button class="btn-danger btn-small row-action" type="button">Remove</button>`;
+      row.querySelector("select").addEventListener("change", e => {
+        const updated = playing.find(p => p.id === player.id);
+        if (updated) updated.position = e.target.value;
+        const source = getRosterPlayer(player.id);
+        if (source) source.position = e.target.value;
+        teams = null;
+        renderAll();
+      });
+      row.querySelector("button").addEventListener("click", () => {
+        playing = playing.filter(p => p.id !== player.id);
+        teams = null;
+        renderAll();
+      });
+      root.appendChild(row);
+    });
+  }
+  document.getElementById("playingCount").textContent = `${playing.length} player${playing.length===1?"":"s"}`;
+  document.getElementById("headerCount").textContent = `Playing: ${playing.length}`;
+  document.getElementById("createTeamsBtn").disabled = playing.length < 2;
+  document.getElementById("sharePlayingBtn").disabled = playing.length === 0;
+  document.getElementById("clearPlayingBtn").disabled = playing.length === 0;
+}
+
+function renderTeams() {
+  const root = document.getElementById("teamResults");
+  if (!teams) {
+    root.innerHTML = '<div class="empty">Add players to the playing list, then create teams.</div>';
+    document.getElementById("teamStatus").textContent = "Not generated";
+    document.getElementById("shareTeamsBtn").disabled = true;
+    document.getElementById("regenerateBtn").disabled = true;
+    return;
+  }
+  const teamMarkup = (team, number) => {
+    const skill = team.reduce((sum,p) => sum + (p.skillLevel==="A" ? 2 : 1), 0);
+    const strength = team.length ? (skill / (team.length * 2) * 10).toFixed(1) : "0.0";
+    const sorted = [...team].sort((a,b) => ["Gk","Def","Att"].indexOf(a.position)-["Gk","Def","Att"].indexOf(b.position) || a.name.localeCompare(b.name));
+    return `<div class="team">
+      <div class="team-top"><h3>TEAM ${number} · ${team.length} players</h3><span class="team-score">${strength}/10 skill</span></div>
+      <div class="team-body">${sorted.length ? `<ul>${sorted.map(p=>`<li>${escapeHtml(p.name)} <span class="player-position">${positionLabels[p.position]}</span></li>`).join("")}</ul>` : '<div class="section-note">No players</div>'}</div>
+    </div>`;
+  };
+  const counts = team => ({
+    GK: team.filter(p=>p.position==="Gk").length,
+    DEF: team.filter(p=>p.position==="Def").length,
+    ATT: team.filter(p=>p.position==="Att").length,
+    A: team.filter(p=>p.skillLevel==="A").length,
+    B: team.filter(p=>p.skillLevel==="B").length
+  });
+  const a = counts(teams[0]), b = counts(teams[1]);
+  root.innerHTML = `<div class="team-grid">${teamMarkup(teams[0],1)}${teamMarkup(teams[1],2)}</div>
+    <div class="team-stats">
+      <div class="stat"><div class="stat-label">Players</div><div class="stat-value">${teams[0].length} : ${teams[1].length}</div></div>
+      <div class="stat"><div class="stat-label">Pro (A)</div><div class="stat-value">${a.A} : ${b.A}</div></div>
+      <div class="stat"><div class="stat-label">Skill points</div><div class="stat-value">${teams[0].reduce((s,p)=>s+(p.skillLevel==="A"?2:1),0)} : ${teams[1].reduce((s,p)=>s+(p.skillLevel==="A"?2:1),0)}</div></div>
+    </div>
+    <div class="notice">Position counts — GK: ${a.GK} : ${b.GK} · DEF: ${a.DEF} : ${b.DEF} · ATT: ${a.ATT} : ${b.ATT}. Skill balance is optimized alongside position balance; exact equality isn't always possible.</div>`;
+  document.getElementById("teamStatus").textContent = "Teams ready";
+  document.getElementById("shareTeamsBtn").disabled = false;
+  document.getElementById("regenerateBtn").disabled = false;
+}
+
+function renderAll() {
+  renderRoster();
+  renderPlaying();
+  renderTeams();
+}
+
+// Objective: prefer equal team sizes, skill points, Pro count, then position counts.
+// Random tie-break values mean pressing regenerate can produce a different fair split.
+function teamCost(t1, t2) {
+  const all = [t1,t2];
+  const sizeDiff = Math.abs(t1.length - t2.length);
+  const skillPoints = t => t.reduce((s,p) => s + (p.skillLevel==="A" ? 2 : 1), 0);
+  const proCount = t => t.filter(p=>p.skillLevel==="A").length;
+  let cost = sizeDiff * 10000;
+  cost += Math.abs(skillPoints(t1)-skillPoints(t2)) * 120;
+  cost += Math.abs(proCount(t1)-proCount(t2)) * 45;
+  for (const pos of ["Gk","Def","Att"]) {
+    const c1 = t1.filter(p=>p.position===pos).length;
+    const c2 = t2.filter(p=>p.position===pos).length;
+    // Strongly reward balanced position counts, especially DEF and ATT.
+    cost += Math.abs(c1-c2) * (pos==="Gk" ? 70 : 100);
+  }
+  // Avoid putting all of a scarce position on one team where the other team has none,
+  // unless the total count makes that unavoidable.
+  for (const pos of ["Gk","Def","Att"]) {
+    const total = all.reduce((s,t)=>s+t.filter(p=>p.position===pos).length,0);
+    if (total >= 2) {
+      const c1 = t1.filter(p=>p.position===pos).length;
+      const c2 = t2.filter(p=>p.position===pos).length;
+      if (c1 === 0 || c2 === 0) cost += 250;
+    }
+  }
+  return cost;
+}
+
+function createTeams() {
+  if (playing.length < 2) {
+    showToast("Add at least 2 players first.");
+    return;
+  }
+  // Randomized greedy assignment followed by pairwise swaps to minimize imbalance.
+  let bestTeams = null;
+  let bestCost = Infinity;
+  const runs = 180;
+  for (let run=0; run<runs; run++) {
+    const ordered = [...playing].sort(() => Math.random() - 0.5)
+      .sort((a,b) => (a.skillLevel===b.skillLevel ? 0 : a.skillLevel==="A" ? -1 : 1));
+    const t1 = [], t2 = [];
+    ordered.forEach(player => {
+      const options = [
+        {teams:[t1,t2], target:t1},
+        {teams:[t1,t2], target:t2}
+      ].sort(() => Math.random() - 0.5);
+      let choice = options[0].target;
+      let lowest = Infinity;
+      for (const option of options) {
+        const c1 = option.target === t1 ? [...t1,player] : t1;
+        const c2 = option.target === t2 ? [...t2,player] : t2;
+        const cost = teamCost(c1,c2);
+        if (cost < lowest) { lowest = cost; choice = option.target; }
+      }
+      choice.push(player);
+    });
+
+    // Improve assignment by swapping pairs when that lowers the objective.
+    let improved = true, rounds = 0;
+    while (improved && rounds++ < 8) {
+      improved = false;
+      let current = teamCost(t1,t2);
+      outer: for (let i=0; i<t1.length; i++) {
+        for (let j=0; j<t2.length; j++) {
+          const x = t1[i], y = t2[j];
+          t1[i] = y; t2[j] = x;
+          const next = teamCost(t1,t2);
+          if (next < current) { current = next; improved = true; break outer; }
+          t1[i] = x; t2[j] = y;
+        }
+      }
+    }
+    const score = teamCost(t1,t2);
+    if (score < bestCost) {
+      bestCost = score;
+      bestTeams = [[...t1],[...t2]];
+    }
+  }
+  teams = bestTeams;
+  renderTeams();
+}
+
+function shareText(message) {
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function sharePlaying() {
+  if (!playing.length) return showToast("The playing list is empty.");
+  const message = playing.map(p=>p.name).join("\n");
+  shareText(message);
+}
+
+function shareTeams() {
+  if (!teams) return showToast("Create teams first.");
+  const names1 = teams[0].map(p=>p.name).join("\n");
+  const names2 = teams[1].map(p=>p.name).join("\n");
+  const message = `TEAM 1\n${names1}\n\nTEAM 2\n${names2}`;
+  shareText(message);
+}
+
+document.getElementById("addPlayerForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = document.getElementById("newName").value.trim();
+  if (!name) return;
+  const position = document.getElementById("newPosition").value;
+  const skillLevel = document.getElementById("newSkill").value;
+  const player = {name, position, skillLevel, id:`custom-${nextId++}`};
+  roster.push(player);
+  document.getElementById("newName").value = "";
+  playing.push({...player});
+  teams = null;
+  renderAll();
+  showToast(`${name} added to roster and playing list.`);
+});
+
+document.getElementById("createTeamsBtn").addEventListener("click", createTeams);
+document.getElementById("regenerateBtn").addEventListener("click", createTeams);
+document.getElementById("sharePlayingBtn").addEventListener("click", sharePlaying);
+document.getElementById("shareTeamsBtn").addEventListener("click", shareTeams);
+document.getElementById("clearPlayingBtn").addEventListener("click", () => {
+  playing = [];
+  teams = null;
+  renderAll();
+  showToast("Playing list cleared.");
+});
+
+renderAll();
+</script>
+</body>
+</html>
